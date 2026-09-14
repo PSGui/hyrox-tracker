@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#111827" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="HYROX Tracker" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <link rel="icon" href="icons/icon-192.png" />
+  <link rel="stylesheet" href="styles.css" />
+  <title>HYROX Tracker</title>
+</head>
+<body>
+  <header class="app-header">
+    <div>
+      <h1>HYROX Tracker</h1>
+      <p id="header-subtitle">Recomposição + preparação HYROX</p>
+    </div>
+    <button id="installBtn" class="secondary hidden">Instalar</button>
+  </header>
+
+  <main id="app">
+    <section class="view active" data-view="dashboard">
+      <div class="section-title-row">
+        <div>
+          <h2>Hoje</h2>
+          <p class="muted" id="todayLabel"></p>
+        </div>
+        <input id="dashboardDate" type="date" class="date-input" />
+      </div>
+
+      <div class="metric-grid">
+        <article class="card metric-card">
+          <span class="metric-label">Calorias</span>
+          <strong id="dashCalories">0 / 2700</strong>
+          <div class="progress"><span id="calorieProgress"></span></div>
+        </article>
+        <article class="card metric-card">
+          <span class="metric-label">Proteína</span>
+          <strong id="dashProtein">0 / 165 g</strong>
+          <div class="progress"><span id="proteinProgress"></span></div>
+        </article>
+        <article class="card metric-card">
+          <span class="metric-label">Peso</span>
+          <strong id="dashWeight">—</strong>
+          <small id="dashWeightAvg" class="muted">Média 7 dias: —</small>
+        </article>
+        <article class="card metric-card">
+          <span class="metric-label">Treino</span>
+          <strong id="dashWorkout">—</strong>
+          <small id="dashWorkoutStatus" class="muted">—</small>
+        </article>
+      </div>
+
+      <article class="card">
+        <div class="card-title-row">
+          <h3>Macros do dia</h3>
+          <span class="pill" id="macroStatus">0%</span>
+        </div>
+        <div class="macro-row">
+          <div><span>Proteína</span><strong id="macroP">0 g</strong></div>
+          <div><span>Hidratos</span><strong id="macroC">0 g</strong></div>
+          <div><span>Gordura</span><strong id="macroF">0 g</strong></div>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="card-title-row">
+          <h3>Plano do dia</h3>
+          <span class="pill" id="planDayName"></span>
+        </div>
+        <div id="todayPlan"></div>
+      </article>
+
+      <article class="card">
+        <div class="card-title-row">
+          <h3>Peso — últimos 14 registos</h3>
+        </div>
+        <div id="weightChart" class="chart-wrap"></div>
+      </article>
+    </section>
+
+    <section class="view" data-view="food">
+      <div class="section-title-row">
+        <div><h2>Alimentação</h2><p class="muted">Registo por gramas e macros.</p></div>
+        <input id="foodDate" type="date" class="date-input" />
+      </div>
+
+      <article class="card">
+        <h3>Adicionar alimento</h3>
+        <div class="form-grid">
+          <label>Alimento
+            <select id="foodSelect"></select>
+          </label>
+          <label>Quantidade (g)
+            <input id="foodGrams" type="number" min="1" step="1" value="100" />
+          </label>
+          <label>Refeição
+            <select id="mealSelect">
+              <option>Pequeno-almoço</option>
+              <option>Almoço</option>
+              <option>Lanche</option>
+              <option>Jantar</option>
+              <option>Ceia</option>
+            </select>
+          </label>
+        </div>
+        <div id="foodPreview" class="preview-box"></div>
+        <button id="addFoodBtn" class="primary">Adicionar</button>
+      </article>
+
+      <article class="card">
+        <div class="card-title-row"><h3>Registo do dia</h3><strong id="foodDayTotal">0 kcal</strong></div>
+        <div id="foodLog"></div>
+      </article>
+
+      <article class="card">
+        <h3>Alimento personalizado</h3>
+        <p class="muted">Valores por 100 g. Útil para rótulos específicos.</p>
+        <div class="form-grid two">
+          <label>Nome<input id="customFoodName" type="text" /></label>
+          <label>kcal<input id="customFoodKcal" type="number" min="0" step="1" /></label>
+          <label>Proteína (g)<input id="customFoodP" type="number" min="0" step="0.1" /></label>
+          <label>Hidratos (g)<input id="customFoodC" type="number" min="0" step="0.1" /></label>
+          <label>Gordura (g)<input id="customFoodF" type="number" min="0" step="0.1" /></label>
+        </div>
+        <button id="saveCustomFoodBtn" class="secondary">Guardar alimento</button>
+      </article>
+    </section>
+
+    <section class="view" data-view="body">
+      <div class="section-title-row"><div><h2>Peso e medidas</h2><p class="muted">Usa tendência, não um valor isolado.</p></div></div>
+
+      <article class="card">
+        <h3>Novo registo</h3>
+        <div class="form-grid two">
+          <label>Data<input id="bodyDate" type="date" /></label>
+          <label>Peso (kg)<input id="weightInput" type="number" step="0.1" min="40" max="200" /></label>
+          <label>Cintura (cm)<input id="waistInput" type="number" step="0.1" min="40" max="200" /></label>
+          <label>Peito (cm)<input id="chestInput" type="number" step="0.1" min="40" max="200" /></label>
+          <label>Braço (cm)<input id="armInput" type="number" step="0.1" min="10" max="100" /></label>
+          <label>Coxa (cm)<input id="thighInput" type="number" step="0.1" min="20" max="120" /></label>
+        </div>
+        <button id="saveBodyBtn" class="primary">Guardar registo</button>
+      </article>
+
+      <article class="card">
+        <div class="card-title-row"><h3>Evolução</h3><span class="pill" id="weightTrend"></span></div>
+        <div id="bodyChart" class="chart-wrap"></div>
+      </article>
+
+      <article class="card"><h3>Histórico</h3><div id="bodyHistory"></div></article>
+    </section>
+
+    <section class="view" data-view="training">
+      <div class="section-title-row">
+        <div><h2>Treino</h2><p class="muted">Regista séries, carga, repetições e esforço.</p></div>
+        <input id="trainingDate" type="date" class="date-input" />
+      </div>
+
+      <article class="card">
+        <div class="card-title-row"><h3 id="trainingPlanTitle">Plano</h3><button id="markWorkoutDoneBtn" class="secondary">Marcar treino concluído</button></div>
+        <div id="trainingPlan"></div>
+      </article>
+
+      <article class="card">
+        <h3>Adicionar série</h3>
+        <div class="form-grid two">
+          <label>Exercício<input id="exerciseInput" type="text" placeholder="Ex.: Supino" /></label>
+          <label>Carga (kg)<input id="loadInput" type="number" step="0.5" min="0" /></label>
+          <label>Repetições<input id="repsInput" type="number" step="1" min="1" /></label>
+          <label>RPE (1–10)<input id="rpeInput" type="number" step="0.5" min="1" max="10" /></label>
+        </div>
+        <button id="addSetBtn" class="primary">Adicionar série</button>
+      </article>
+
+      <article class="card"><h3>Séries registadas</h3><div id="setLog"></div></article>
+    </section>
+
+    <section class="view" data-view="cardio">
+      <div class="section-title-row"><div><h2>Corrida / HYROX</h2><p class="muted">Regista tempo, distância, pace, FC e RPE.</p></div></div>
+
+      <article class="card">
+        <h3>Novo treino cardio</h3>
+        <div class="form-grid two">
+          <label>Data<input id="cardioDate" type="date" /></label>
+          <label>Tipo
+            <select id="cardioType">
+              <option>Zone 2</option>
+              <option>Threshold</option>
+              <option>Intervalos</option>
+              <option>Recuperação</option>
+              <option>HYROX compromised running</option>
+              <option>SkiErg</option>
+              <option>Remo</option>
+              <option>Outro</option>
+            </select>
+          </label>
+          <label>Duração (min)<input id="durationInput" type="number" step="1" min="1" /></label>
+          <label>Distância (km)<input id="distanceInput" type="number" step="0.01" min="0" /></label>
+          <label>FC média<input id="hrInput" type="number" step="1" min="40" max="220" /></label>
+          <label>RPE (1–10)<input id="cardioRpeInput" type="number" step="0.5" min="1" max="10" /></label>
+        </div>
+        <label>Notas<textarea id="cardioNotes" rows="3" placeholder="Ex.: respiração controlada, pernas pesadas..."></textarea></label>
+        <button id="saveCardioBtn" class="primary">Guardar treino</button>
+      </article>
+
+      <article class="card">
+        <h3>Guia de zonas</h3>
+        <div class="zone-list">
+          <div><strong>Z1 — recuperação</strong><span>RPE 1–2 · muito fácil · 20–40 min.</span></div>
+          <div><strong>Z2 — base aeróbia</strong><span>RPE 3–4 · conversa normal · 45–60 min.</span></div>
+          <div><strong>Z3 — steady</strong><span>RPE 5–6 · frases curtas · blocos de 10–25 min.</span></div>
+          <div><strong>Z4 — threshold</strong><span>RPE 7–8 · difícil controlado · blocos de 4–10 min.</span></div>
+          <div><strong>Z5 — VO₂ / intervalos</strong><span>RPE 9–10 · muito intenso · repetições curtas.</span></div>
+        </div>
+      </article>
+
+      <article class="card"><h3>Histórico cardio</h3><div id="cardioHistory"></div></article>
+    </section>
+
+    <section class="view" data-view="settings">
+      <div class="section-title-row"><div><h2>Definições e backup</h2><p class="muted">Metas e exportação dos teus dados.</p></div></div>
+      <article class="card">
+        <h3>Metas diárias</h3>
+        <div class="form-grid two">
+          <label>Calorias<input id="goalCalories" type="number" step="10" /></label>
+          <label>Proteína (g)<input id="goalProtein" type="number" step="1" /></label>
+          <label>Hidratos (g)<input id="goalCarbs" type="number" step="1" /></label>
+          <label>Gordura (g)<input id="goalFat" type="number" step="1" /></label>
+        </div>
+        <button id="saveGoalsBtn" class="primary">Guardar metas</button>
+      </article>
+      <article class="card">
+        <h3>Dados</h3>
+        <div class="button-stack">
+          <button id="exportJsonBtn" class="secondary">Exportar backup JSON</button>
+          <button id="exportCsvBtn" class="secondary">Exportar CSV alimentação/peso</button>
+          <label class="file-button">Importar backup JSON<input id="importJsonInput" type="file" accept="application/json" /></label>
+          <button id="resetDataBtn" class="danger">Apagar dados locais</button>
+        </div>
+      </article>
+      <article class="card">
+        <h3>Instalação no iPhone</h3>
+        <p>Depois de alojar esta pasta num endereço HTTPS, abre no Safari → Partilhar → <strong>Adicionar ao ecrã principal</strong>.</p>
+      </article>
+    </section>
+  </main>
+
+  <nav class="bottom-nav">
+    <button data-target="dashboard" class="active"><span>Hoje</span></button>
+    <button data-target="food"><span>Comida</span></button>
+    <button data-target="body"><span>Corpo</span></button>
+    <button data-target="training"><span>Treino</span></button>
+    <button data-target="cardio"><span>Cardio</span></button>
+    <button data-target="settings"><span>Mais</span></button>
+  </nav>
+
+  <div id="toast" class="toast"></div>
+  <script src="app.js"></script>
+</body>
+</html>
